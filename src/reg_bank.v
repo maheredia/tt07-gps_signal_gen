@@ -65,10 +65,10 @@ uart_rx
 #(.CLKS_PER_BIT(CLKS_PER_BIT))
 u_rx
 (
-  .i_Clock     ( clk_in        ),
+  .clk_in      ( clk_in        ),
   .rst_in_n    ( rst_in_n      ),
-  .i_Rx_Serial ( rx_in         ),
-  .o_Rx_DV     ( rx_data_valid ),
+  .rx_in       ( rx_in         ),
+  .rx_dv_out   ( rx_data_valid ),
   .o_Rx_Byte   ( rx_data       )
 );
 
@@ -99,7 +99,7 @@ begin
     ca_phase_hi_reg <= 8'h00; //TODO: check default values
     snr_reg         <= 8'h00; //TODO: check default values
   end
-  else if(we==1'b1)
+  else if(we==1'b1 && rx_data_valid==1'b1)
   begin
     case(addr)
     begin
