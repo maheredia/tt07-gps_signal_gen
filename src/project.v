@@ -21,4 +21,26 @@ module tt_um_maheredia (
   assign uio_out = 0;
   assign uio_oe  = 0;
 
+reg_bank
+#(
+  .CLKS_PER_BIT(142)
+)
+reg_bank
+(
+  .clk_in             (clk          ),
+  .rst_in_n           (rst_n        ),
+  .code_phase_done    (1'b0         ),
+  .rx_in              (ui_in[0]     ),
+  .tx_out             (uo_out[0]    ),
+  .enable_out         (uo_out[1]  ),
+  .n_sat_out          (             ),
+  .use_preset_out     (uo_out[2]  ),
+  .use_msg_preset_out (uo_out[3]  ),
+  .noise_off_out      (uo_out[4]  ),
+  .signal_off_out     (             ),
+  .ca_phase_out       (             ),
+  .doppler_out        (             ),
+  .snr_out            (             )  
+);
+
 endmodule
