@@ -1,0 +1,12 @@
+#Clocks
+set_frequency clk_in 16.368
+
+#I/O
+set_io rst_in_n 31
+set_io clk_in 94
+set_io tx_out 56
+set_io rx_in  55
+set_io leds_out[0] 1
+set_io leds_out[1] 2
+set_io leds_out[2] 3
+set_io leds_out[3] 4
