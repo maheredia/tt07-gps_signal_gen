@@ -17,9 +17,11 @@ module tt_um_maheredia (
 );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
+  assign uo_out  = {7'b0, tx_out};
   assign uio_out = 0;
   assign uio_oe  = 0;
+
+wire tx_out            ;
 
 reg_bank
 #(
@@ -31,12 +33,12 @@ reg_bank
   .rst_in_n           (rst_n        ),
   .code_phase_done    (1'b0         ),
   .rx_in              (ui_in[0]     ),
-  .tx_out             (uo_out[0]    ),
-  .enable_out         (uo_out[1]  ),
+  .tx_out             (tx_out       ),
+  .enable_out         (             ),
   .n_sat_out          (             ),
-  .use_preset_out     (uo_out[2]  ),
-  .use_msg_preset_out (uo_out[3]  ),
-  .noise_off_out      (uo_out[4]  ),
+  .use_preset_out     (             ),
+  .use_msg_preset_out (             ),
+  .noise_off_out      (             ),
   .signal_off_out     (             ),
   .ca_phase_out       (             ),
   .doppler_out        (             ),
