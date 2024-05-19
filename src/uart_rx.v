@@ -1,6 +1,6 @@
 // START BIT + 8 DATA BITS + STOP BITS (no parity)
 // CLKS_PER_BIT = (Frequency of clk_in)/(Frequency of UART)
-// Example: 16.384 MHz Clock, 115200 baud UART
+// Example: 16.368 MHz Clock, 115200 baud UART
 // (16368000 / 115200) ~= 142
 //TODO: CHECK WHOLE ARCHITECTURE AND TEST!
 module uart_rx 
