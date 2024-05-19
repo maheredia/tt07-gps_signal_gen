@@ -25,27 +25,6 @@ integer       i                  ;
 integer       error_count     = 0;
 integer       test_data          ;
 
-//Task to send data, NOT USED HERE
-task UART_SEND;
-input [7:0] data;
-integer     ii;
-begin
-  //Start bit
-  test_rx_in <= 1'b0;
-  #(BIT_PER);
-  #1000;     
-  //Data
-  for (ii=0; ii<8; ii=ii+1)
-  begin
-    test_rx_in <= data[ii];
-    #(BIT_PER);
-  end
-  //Stop bit
-  test_rx_in <= 1'b1;
-  #(BIT_PER);
-end
-endtask
-
 //DUTs:
 uart_rx 
 #(.CLKS_PER_BIT(CLKS_PER_BIT)) 
@@ -102,8 +81,8 @@ begin
     @(posedge test_rx_dv_out);
     if(test_rx_data_out != test_data)
     begin
-      $error("ERROR: i = %d, expected = %d, received = %d, error_count = %d\n",i,test_data,test_rx_data_out,error_count);
       error_count = error_count + 1;
+      $error("ERROR: i = %d, expected = %d, received = %d, error_count = %d\n",i,test_data,test_rx_data_out,error_count);
     end
     wait(test_tx_active_out==1'b0);
   end
