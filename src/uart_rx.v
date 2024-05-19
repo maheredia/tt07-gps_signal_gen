@@ -1,6 +1,6 @@
 // START BIT + 8 DATA BITS + STOP BITS (no parity)
 // CLKS_PER_BIT = (Frequency of clk_in)/(Frequency of UART)
-// Example: 16384 MHz Clock, 115200 baud UART
+// Example: 16.384 MHz Clock, 115200 baud UART
 // (16368000 / 115200) ~= 142
 //TODO: CHECK WHOLE ARCHITECTURE AND TEST!
 module uart_rx 
@@ -16,31 +16,31 @@ module uart_rx
 );
 
 //Local parameters:
-localparam IDLE         = 3'b000;
-localparam START_BIT    = 3'b001;
-localparam GET_DATA = 3'b010;
-localparam STOP_BIT  = 3'b011;
-localparam DONE      = 3'b100;
+localparam IDLE           = 3'b000;
+localparam START_BIT      = 3'b001;
+localparam GET_DATA       = 3'b010;
+localparam STOP_BIT       = 3'b011;
+localparam DONE           = 3'b100;
 localparam NB_CNTR        = $clog2(CLKS_PER_BIT);
 localparam CNTR_LIMIT_LO  = (CLKS_PER_BIT-1)/2;
 localparam CNTR_LIMIT_HI  = CLKS_PER_BIT-1;
 
 //Internal signals:
-reg [1:0]             rx_meta_reg   ;
+reg  [1:0]            rx_meta_reg   ;
 wire                  rx_data_sync  ;
-reg [2:0]             current_state ;
-reg [2:0]             next_state    ;
+reg  [2:0]            current_state ;
+reg  [2:0]            next_state    ;
 
 reg                   cntr_ena      ;
-reg [NB_CNTR-1:0]     cntr_limit    ;
+wire [NB_CNTR-1:0]    cntr_limit    ;
 reg                   cntr_limit_sel;
-reg [NB_CNTR-1:0]     cntr          ;
+reg  [NB_CNTR-1:0]    cntr          ;
 reg                   cntr_tc       ;
 
 reg                   rx_shift_ena  ;
-wire                  rx_shift_done ;
-reg [2:0]             rx_bit_cntr   ;
-reg [7:0]             rx_data       ;
+reg                   rx_shift_done ;
+reg  [2:0]            rx_bit_cntr   ;
+reg  [7:0]            rx_data       ;
 reg                   rx_dv         ;
 
 reg                   clear_all     ;
@@ -66,8 +66,10 @@ assign cntr_limit = (cntr_limit_sel == 1'b1) ? (CNTR_LIMIT_HI) : (CNTR_LIMIT_LO)
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
+  begin
     cntr    <= {NB_CNTR{1'b0}};
     cntr_tc <= 1'b0;
+  end
   else
   begin
     if(clear_all==1'b1)
@@ -92,22 +94,37 @@ end
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
-    rx_bit_cntr <= 3'b000;
+  begin
+    rx_bit_cntr   <= 3'b000;
+    rx_shift_done <= 1'b0;
+  end
   else if(clear_all==1'b1)
-    rx_bit_cntr <= 3'b000;
-  else if(rx_shift_ena==1'b1)
-    rx_bit_cntr <= rx_bit_cntr + 1'b1;
+  begin
+    rx_bit_cntr   <= 3'b000;
+    rx_shift_done <= 1'b0;
+  end
+  else if(rx_shift_ena==1'b1 && cntr_tc==1'b1)
+  begin
+    if(rx_bit_cntr < 3'b111)
+    begin
+      rx_bit_cntr   <= rx_bit_cntr + 1'b1;
+      rx_shift_done <= 1'b0;
+    end
+    else
+    begin
+      rx_bit_cntr   <= 3'b000;
+      rx_shift_done <= 1'b1;
+    end
+  end
 end
 
-assign rx_shift_done = &rx_bit_cntr;
-
-//Rx data reg:
+//Rx shift reg:
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
     rx_data <= 8'h00;
   else if(rx_shift_ena==1'b1 && cntr_tc==1'b1)
-    rx_data <= {rx_data[6:0], rx_data_sync};
+    rx_data <= {rx_data_sync, rx_data[7:1]};
 end
 
 //FSM: sequential logic
@@ -119,10 +136,10 @@ begin
     current_state <= next_state;
 end
 
-// Purpose: Control RX state machine
+//FSM: next state logic
 always @(*)
 begin  
-case (next_state)
+case (current_state)
   IDLE:
   begin
     cntr_ena       = 1'b0;
@@ -194,12 +211,14 @@ case (next_state)
   end
    
   default:
+  begin
     cntr_ena       = 1'b0;
     cntr_limit_sel = 1'b0;
     rx_shift_ena   = 1'b0;
     rx_dv          = 1'b0;
     clear_all      = 1'b1;
     next_state = IDLE;
+  end
 endcase
 end   
 
