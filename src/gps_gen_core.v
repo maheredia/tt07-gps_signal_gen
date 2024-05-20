@@ -37,18 +37,18 @@ always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
   begin
-    ca_phase_cntr <= 16'd0;
+    gc_phase_cntr <= 16'd0;
   end
   else if(ena_in==1'b1)
   begin
-    ca_phase_cntr <= 16'd0;
+    gc_phase_cntr <= 16'd0;
   end
-  else if((ca_phase_start_in==1'b1) && (ca_phase_cntr < ca_phase_in))
+  else if((ca_phase_start_in==1'b1) && (gc_phase_cntr < ca_phase_in))
   begin
-    ca_phase_cntr <= ca_phase_cntr + 1'b1;
+    gc_phase_cntr <= gc_phase_cntr + 1'b1;
   end
 end
-assign gc_ena = (ca_phase_start_in & (ca_phase_cntr < ca_phase_in)) | ena_in;
+assign gc_ena = (ca_phase_start_in & (gc_phase_cntr < ca_phase_in)) | ena_in;
 gc_gen gc_gen
 (
   .rst_in_n   ( rst_in_n  ),
@@ -67,5 +67,5 @@ gc_gen gc_gen
 //Output adder:
 
 //Outputs:
-assign code_phase_done_out = (ca_phase_cntr >= ca_phase_in);
+assign code_phase_done_out = (gc_phase_cntr >= ca_phase_in);
 endmodule
