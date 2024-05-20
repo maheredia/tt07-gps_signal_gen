@@ -23,6 +23,7 @@ wire                test_use_preset_out      ;
 wire                test_use_msg_preset_out  ;
 wire                test_noise_off_out       ;
 wire                test_signal_off_out      ;
+wire                test_ca_phase_start_out  ;
 wire [15:0]         test_ca_phase_out        ;
 wire [7:0]          test_doppler_out         ;
 wire [7:0]          test_snr_out             ;
@@ -96,6 +97,7 @@ dut
   .use_msg_preset_out (test_use_msg_preset_out),
   .noise_off_out      (test_noise_off_out     ),
   .signal_off_out     (test_signal_off_out    ),
+  .ca_phase_start_out (test_ca_phase_start_out),
   .ca_phase_out       (test_ca_phase_out      ),
   .doppler_out        (test_doppler_out       ),
   .snr_out            (test_snr_out           )  

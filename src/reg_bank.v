@@ -15,6 +15,7 @@ module reg_bank
   output                use_msg_preset_out  ,
   output                noise_off_out       ,
   output                signal_off_out      ,
+  output                ca_phase_start_out  ,
   output [15:0]         ca_phase_out        ,
   output [7:0]          doppler_out         ,
   output [7:0]          snr_out               //TODO: check width
@@ -160,6 +161,7 @@ assign use_preset_out     = ctrl_reg[1]       ;
 assign use_msg_preset_out = ctrl_reg[2]       ;
 assign noise_off_out      = ctrl_reg[4]       ;
 assign signal_off_out     = ctrl_reg[5]       ;
+assign ca_phase_start_out = ctrl_reg[3]       ;
 assign ca_phase_out       = {ca_phase_hi_reg, ca_phase_lo_reg};
 assign doppler_out        = doppler_reg       ;
 assign snr_out            = snr_reg           ; //TODO: CHECK WIDTH
