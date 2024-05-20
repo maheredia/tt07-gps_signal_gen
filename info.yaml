@@ -19,6 +19,8 @@ project:
     - "reg_bank.v"
     - "uart_tx.v"
     - "uart_rx.v"
+    - "gps_gen_core.v"
+    - "gc_gen.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
