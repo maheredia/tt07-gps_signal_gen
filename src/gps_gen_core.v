@@ -68,4 +68,6 @@ gc_gen gc_gen
 
 //Outputs:
 assign code_phase_done_out = (gc_phase_cntr >= ca_phase_in);
+assign signal_out = gc ; //TODO
+assign start_out = 1'b0; //TODO 
 endmodule
