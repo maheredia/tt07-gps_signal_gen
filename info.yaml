@@ -21,6 +21,10 @@ project:
     - "uart_rx.v"
     - "gps_gen_core.v"
     - "gc_gen.v"
+    - "nco.v"
+    - "lookup.v"
+    - "sin.hex"
+    - "cos.hex"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

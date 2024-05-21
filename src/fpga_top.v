@@ -67,7 +67,8 @@ gps_gen_core core
   .snr_in              ( snr             ),
   .code_phase_done_out ( code_phase_done ),
   .start_out           ( leds_out[0]         ),
-  .signal_out          ( leds_out[1]         ) 
+  .sin_out             ( leds_out[1]         ),
+  .cos_out             ( leds_out[2]         )
 );
-assign leds_out[3:2] = 2'b00;
+assign leds_out[3] = 0;
 endmodule

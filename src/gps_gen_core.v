@@ -16,15 +16,23 @@ module gps_gen_core
   input [7:0]     snr_in              ,
   output          code_phase_done_out ,
   output          start_out           ,//TODO: define this one
-  output          signal_out           
+  output          sin_out              
 );
 
 //Local parameters:
+localparam NCO_FREQ_CTRL_WORD_LEN = 14;
+localparam NCO_PHASE_ACC_BITS     = 15;
+localparam NCO_TRUNCATED_BITS     = 2 ;
+localparam NCO_DATA_BITS_OUT      = 1 ;
 
 //Internal signals:
 reg  [15:0] gc_phase_cntr    ;
 wire        gc_ena           ;
 wire        gc               ;
+
+wire [NCO_FREQ_CTRL_WORD_LEN-1:0] nco_phi;
+wire                              nco_sin;
+wire                              nco_cos;
 
 /*------------------------LOGIC BEGINS----------------------------------*/
 
@@ -59,6 +67,23 @@ gc_gen gc_gen
 );
 
 //NCO:
+assign nco_phi = 14'd8000 + doppler_in;
+nco
+#(
+  .FREQ_CTRL_WORD_LEN ( NCO_FREQ_CTRL_WORD_LEN),
+  .PHASE_ACC_BITS     ( NCO_PHASE_ACC_BITS    ),
+  .TRUNCATED_BITS     ( NCO_TRUNCATED_BITS    ), 
+  .DATA_BITS_OUT      ( NCO_DATA_BITS_OUT     ) 
+)
+nco
+(
+  .delta_phi ( nco_phi   ),
+  .clk       ( clk_in    ), 
+  .ena       ( ena_in    ), 
+  .rst       ( ~rst_in_n ), 
+  .sin       ( nco_sin   ),
+  .cos       ( nco_cos   ) 
+);
 
 //Message selector:
 
@@ -68,6 +93,7 @@ gc_gen gc_gen
 
 //Outputs:
 assign code_phase_done_out = (gc_phase_cntr >= ca_phase_in);
-assign signal_out = gc ; //TODO
+assign sin_out   = gc^nco_sin ; //TODO
+assign cos_out   = gc^nco_cos ; //TODO
 assign start_out = 1'b0; //TODO 
 endmodule

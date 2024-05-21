@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Your Name
+ * Copyright (c) 2024 Grupo de Aplicaciones en Sistemas Embebidos - UTN FRH
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -17,13 +17,14 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {5'd0, start_out, signal_out, tx_out};
+assign uo_out  = {4'd0, start_out, cos_out, sin_out, tx_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
 //Internal signals:
 wire             tx_out          ;
-wire             signal_out      ;
+wire             sin_out         ;
+wire             cos_out         ;
 wire             start_out       ;
 wire             general_enable  ;
 wire [4:0]       n_sat           ;
@@ -80,7 +81,8 @@ gps_gen_core core
   .snr_in              ( snr             ),
   .code_phase_done_out ( code_phase_done ),
   .start_out           ( start_out       ),
-  .signal_out          ( signal_out      ) 
+  .sin_out             ( sin_out         ),
+  .cos_out             ( cos_out         ) 
 );
 
 endmodule
