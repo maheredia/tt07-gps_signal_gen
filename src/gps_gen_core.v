@@ -16,7 +16,8 @@ module gps_gen_core
   input [7:0]     snr_in              ,
   output          code_phase_done_out ,
   output          start_out           ,//TODO: define this one
-  output          sin_out              
+  output          sin_out             ,
+  output          cos_out              
 );
 
 //Local parameters:
