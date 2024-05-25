@@ -28,9 +28,9 @@ localparam CA_PHASE_LO_ADDR   = 3'b100;
 localparam CA_PHASE_HI_ADDR   = 3'b101;
 localparam SNR_ADDR           = 3'b110;
 
-localparam IDLE          = 2'b001;
-localparam DECODE        = 2'b010;
-localparam WRITE         = 2'b100;
+localparam IDLE          = 3'b001;
+localparam DECODE        = 3'b010;
+localparam WRITE         = 3'b100;
 
 //Internal signals:
 //uart_rx:
