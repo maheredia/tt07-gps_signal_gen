@@ -6,10 +6,10 @@ module lookup_4x1_sine
 
 always @(*) begin
   case (address_in)
-    2'b00: data_out <=  1'b1 ; 
-    2'b01: data_out <=  1'b1 ;
-    2'b10: data_out <=  1'b0 ;
-    2'b11: data_out <=  1'b0 ;
+    2'b00: data_out =  1'b1 ; 
+    2'b01: data_out =  1'b1 ;
+    2'b10: data_out =  1'b0 ;
+    2'b11: data_out =  1'b0 ;
   endcase
 end
 

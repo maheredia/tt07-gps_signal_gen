@@ -17,12 +17,11 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {4'd0, start_out, cos_out, sin_out, tx_out};
+assign uo_out  = {5'd0, start_out, cos_out, sin_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
 //Internal signals:
-wire             tx_out          ;
 wire             sin_out         ;
 wire             cos_out         ;
 wire             start_out       ;
