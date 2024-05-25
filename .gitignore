@@ -9,3 +9,13 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+*.gtkw
+repo_update.sh
+src/docker_iverilog.sh
+src/docker_pnr.sh
+src/docker_synth.sh
+src/top.json
+test/*/__pycache__/
+test/*/iverilog_dump.v
+test/*/results.xml
+test/*/sim_build/

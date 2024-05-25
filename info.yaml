@@ -1,11 +1,11 @@
 # Tiny Tapeout project information
 project:
-  title:        "GPS signal generator"      # Project title
-  author:       "Grupo de Aplicaciones en Sistemas Embebidos - Universidad Tecnológica Nacional Facultad Regional Haedo"      # Your name
+  title:        "GPS signal generator"  # Project title
+  author:       "Grupo de Aplicaciones en Sistemas Embebidos - Universidad Tecnológica Nacional Facultad Regional Haedo" # Your name
   discord:      "maheredia"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "Generate a GPS IF signals using the following parameters: sat id, code phase, doppler and SNR."      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  clock_hz:     16368000  # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 167x108 uM.
   tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2 or 8x2
@@ -16,38 +16,45 @@ project:
   # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
     - "project.v"
+    - "reg_bank_reduced.v"
+    - "uart_rx.v"
+    - "gps_gen_core.v"
+    - "gc_gen.v"
+    - "nco.v"
+    - "lookup_4x1_sine.v"
+    - "lookup_4x1_cos.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
-  ui[5]: ""
-  ui[6]: ""
-  ui[7]: ""
+  ui[0]: "TODO!"
+  ui[1]: "TODO!"
+  ui[2]: "TODO!"
+  ui[3]: "TODO!"
+  ui[4]: "TODO!"
+  ui[5]: "TODO!"
+  ui[6]: "TODO!"
+  ui[7]: "TODO!"
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  uo[0]: "TODO"
+  uo[1]: "TODO"
+  uo[2]: "TODO"
+  uo[3]: "TODO"
+  uo[4]: "TODO"
+  uo[5]: "TODO"
+  uo[6]: "TODO"
+  uo[7]: "TODO"
 
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "TODO"
+  uio[1]: "TODO"
+  uio[2]: "TODO"
+  uio[3]: "TODO"
+  uio[4]: "TODO"
+  uio[5]: "TODO"
+  uio[6]: "TODO"
+  uio[7]: "TODO"
 
 # Do not change!
 yaml_version: 6
