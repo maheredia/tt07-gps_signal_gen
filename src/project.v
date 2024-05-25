@@ -39,7 +39,7 @@ wire [7:0]       snr             ;
 wire             code_phase_done ;
 
 //Register bank:
-reg_bank
+reg_bank_reduced
 #(
   .CLKS_PER_BIT(142)
 )
@@ -49,7 +49,6 @@ reg_bank
   .rst_in_n           ( rst_n              ),
   .code_phase_done    ( code_phase_done    ),
   .rx_in              ( ui_in[0]           ),
-  .tx_out             ( tx_out             ),
   .enable_out         ( general_enable     ),
   .n_sat_out          ( n_sat              ),
   .use_preset_out     ( use_preset         ),

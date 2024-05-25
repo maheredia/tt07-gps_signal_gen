@@ -16,7 +16,7 @@ project:
   # List your project's source files here. Source files must be in ./src and you must list each source file separately, one per line:
   source_files:        
     - "project.v"
-    - "reg_bank.v"
+    - "reg_bank_reduced.v"
     - "uart_tx.v"
     - "uart_rx.v"
     - "gps_gen_core.v"
