@@ -1,4 +1,4 @@
-from gps.modeling.search_module.local_gps_gen.gc_gen.gold_codes import GC
+from gold_codes import GC
 
 import cocotb
 from cocotb.clock import Clock
@@ -35,6 +35,7 @@ async def gc_gen_test(dut):
 async def initialize_module(dut):
     cocotb.start_soon(Clock(dut.clk_in, CLK_PERIOD, units=TIME_UNIT).start())
     dut.rst_in_n.value = 0
+    dut.ena_in.value = 1
     dut.sat_sel_in.value = 0
     await Timer(CLK_PERIOD, units=TIME_UNIT)
     dut.rst_in_n.value = 1

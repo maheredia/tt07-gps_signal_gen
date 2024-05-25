@@ -1,4 +1,4 @@
-from gps.modeling.search_module.local_gps_gen.nco.nco import NCO
+from nco import NCO
 
 import cocotb
 from cocotb.clock import Clock

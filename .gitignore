@@ -15,3 +15,7 @@ src/docker_iverilog.sh
 src/docker_pnr.sh
 src/docker_synth.sh
 src/top.json
+test/*/__pycache__/
+test/*/iverilog_dump.v
+test/*/results.xml
+test/*/sim_build/
