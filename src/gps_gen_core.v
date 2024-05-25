@@ -96,8 +96,8 @@ nco
 assign navigation_msg = msg_in;
 
 //Clean signals:
-assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin)
-assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos)
+assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin);
+assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos);
 
 //Noise generator:
 //TODO
