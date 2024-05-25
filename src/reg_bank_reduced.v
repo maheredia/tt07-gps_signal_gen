@@ -5,11 +5,9 @@ module reg_bank_reduced
 (
   input                 clk_in              ,
   input                 rst_in_n            ,
-  input                 code_phase_done     ,
   input                 rx_in               ,
   output                enable_out          ,
   output [4:0]          n_sat_out           ,
-  output                use_preset_out      ,
   output                use_msg_preset_out  ,
   output                noise_off_out       ,
   output                signal_off_out      ,
@@ -21,7 +19,6 @@ module reg_bank_reduced
 
 //Local parameters:
 localparam CTRL_ADDR          = 3'b000;
-localparam STATUS_ADDR        = 3'b001;
 localparam SAT_ID_ADDR        = 3'b010;
 localparam DOPPLER_ADDR       = 3'b011;
 localparam CA_PHASE_LO_ADDR   = 3'b100;
@@ -71,9 +68,9 @@ always @(posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
   begin
-    ctrl_reg        <= 8'h06;
+    ctrl_reg        <= 8'h02; //Start with msg preset
     sat_id_reg      <= 8'h00;
-    doppler_reg     <= 8'h00; //TODO: check default values
+    doppler_reg     <= 8'hC0; //192
     ca_phase_lo_reg <= 8'h00;
     ca_phase_hi_reg <= 8'h00;
     snr_reg         <= 8'h00; //TODO: check default values
@@ -103,11 +100,10 @@ end
 //Outputs:
 assign enable_out         = ctrl_reg[0]       ;
 assign n_sat_out          = sat_id_reg[4:0]   ;
-assign use_preset_out     = ctrl_reg[1]       ;
-assign use_msg_preset_out = ctrl_reg[2]       ;
+assign use_msg_preset_out = ctrl_reg[1]       ;
+assign ca_phase_start_out = ctrl_reg[3]       ;
 assign noise_off_out      = ctrl_reg[4]       ;
 assign signal_off_out     = ctrl_reg[5]       ;
-assign ca_phase_start_out = ctrl_reg[3]       ;
 assign ca_phase_out       = {ca_phase_hi_reg, ca_phase_lo_reg};
 assign doppler_out        = doppler_reg       ;
 assign snr_out            = snr_reg           ; //TODO: CHECK WIDTH

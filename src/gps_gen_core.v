@@ -25,15 +25,20 @@ localparam NCO_FREQ_CTRL_WORD_LEN = 14;
 localparam NCO_PHASE_ACC_BITS     = 15;
 localparam NCO_TRUNCATED_BITS     = 2 ;
 localparam NCO_DATA_BITS_OUT      = 1 ;
+localparam NB_NOISE_GEN           = 5 ;
 
 //Internal signals:
-reg  [15:0] gc_phase_cntr    ;
-wire        gc_ena           ;
-wire        gc               ;
-
-wire [NCO_FREQ_CTRL_WORD_LEN-1:0] nco_phi;
-wire                              nco_sin;
-wire                              nco_cos;
+wire                              navigation_msg   ;
+reg  [15:0]                       gc_phase_cntr    ;
+wire                              gc_ena           ;
+wire                              gc               ;
+wire [NCO_FREQ_CTRL_WORD_LEN-1:0] nco_phi          ;
+wire                              nco_sin          ;
+wire                              nco_cos          ;
+wire                              cos_clean        ;
+wire                              sin_clean        ;
+wire [NB_NOISE_GEN-1:0]           noise            ;
+wire [NB_NOISE_GEN:0]             output_adder     ;
 
 /*------------------------LOGIC BEGINS----------------------------------*/
 
@@ -87,14 +92,23 @@ nco
 );
 
 //Message selector:
+//TODO: define message preset
+assign navigation_msg = msg_in;
+
+//Clean signals:
+assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin)
+assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos)
 
 //Noise generator:
+//TODO
+assign noise = 0;
 
 //Output adder:
-
+//TODO:
+assign output_adder = 0;
 //Outputs:
 assign code_phase_done_out = (gc_phase_cntr >= ca_phase_in);
-assign sin_out   = gc^nco_sin ; //TODO
-assign cos_out   = gc^nco_cos ; //TODO
+assign sin_out   =  sin_clean; //TODO
+assign cos_out   =  cos_clean; //TODO
 assign start_out = 1'b0; //TODO 
 endmodule
