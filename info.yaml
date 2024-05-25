@@ -22,9 +22,8 @@ project:
     - "gps_gen_core.v"
     - "gc_gen.v"
     - "nco.v"
-    - "lookup.v"
-    - "sin.hex"
-    - "cos.hex"
+    - "lookup_4x1_sine.v"
+    - "lookup_4x1_cos.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

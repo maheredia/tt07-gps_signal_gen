@@ -3,7 +3,7 @@ module nco#(
     parameter FREQ_CTRL_WORD_LEN = 8 ,
     parameter PHASE_ACC_BITS     = 10,
     parameter TRUNCATED_BITS     = 2 , 
-    parameter DATA_BITS_OUT      = 8
+    parameter DATA_BITS_OUT      = 1
 )(
     input  wire [FREQ_CTRL_WORD_LEN-1:0] delta_phi ,
     input  wire                      clk       , 
@@ -34,28 +34,19 @@ always @(posedge clk, posedge rst) begin
     end
 end
 
-
-
 // Truncamiento 
 wire [ TRUNCATED_BITS-1:0 ] truncated_acc ; 
 assign truncated_acc = acc_out[PHASE_ACC_BITS-1 -: TRUNCATED_BITS] ; 
 
 // Lookup tables 
-lookup #(DATA_BITS_OUT, TRUNCATED_BITS, "sin.hex") sin_table (
-    .clk_in    ( clk ),
-    .ena_in    ( ena ), 
+lookup_4x1_sine sin_table (
     .address_in( truncated_acc ), 
-    .data_out  ( sin )
-);
-lookup #(DATA_BITS_OUT, TRUNCATED_BITS, "cos.hex") cos_table (
-    .clk_in    ( clk ),
-    .ena_in    ( ena ), 
-    .address_in( truncated_acc ), 
-    .data_out  ( cos )
+    .data_out  ( sin           )
 );
 
+lookup_4x1_cos cos_table (
+    .address_in( truncated_acc ), 
+    .data_out  ( cos           )
+);
 
-
-
-    
 endmodule
