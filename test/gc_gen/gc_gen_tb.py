@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.getcwd()+'/../models/')
 from gold_codes import GC
 
 import cocotb

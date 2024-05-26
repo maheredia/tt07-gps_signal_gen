@@ -4,6 +4,10 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, Timer
+import sys
+import os
+sys.path.append(os.getcwd()+'/models/')
+from search import SearchModule
 
 CLK_PERIOD = 61.094
 BIT_PERIOD = 8600
