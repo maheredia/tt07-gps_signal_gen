@@ -3,8 +3,6 @@ from gold_codes import GC
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import Timer, RisingEdge
-import random #Para generar entradas aleatorias
-import numpy as np #Para usar con matplotlib y generar gráficos
 
 
 
