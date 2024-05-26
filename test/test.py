@@ -51,6 +51,7 @@ async def test_project(dut):
     cocotb.start_soon(clock.start())
 
     # Reset
+    test_sat = 7
     dut._log.info("Reset")
     dut.ena.value = 1
     dut.ui_in.value = 0
@@ -65,9 +66,9 @@ async def test_project(dut):
     dut.ui_in.value = 1
     dut.uio_in.value = 0
     
-    #Set sat_id to 7:
+    #Set sat_id to test_sat:
     await uart_send(dut,SAT_ID_ADDR)
-    await uart_send(dut,7)
+    await uart_send(dut,test_sat)
     
     #Set CA phase to 16:
     await uart_send(dut,CA_PHASE_LO_ADDR)
@@ -99,4 +100,15 @@ async def test_project(dut):
         await ClockCycles(dut.clk, 1)
 
     # Dummy assert, this should be improved with a real PASS/FAIL criterium: TODO
+    sm = SearchModule()
+    sm.set_n_sat(test_sat)
+    n_search = []
+    for n in range(25):
+        n_search.append(n)
+    f_search = []
+    for i_f in range(33):
+        f_search.append((i_f-16)*500)
+    (n0, fd, m) = sm.correlate_range(data_in=sin_out, n_range=n_search, fd_range=f_search, verbose=True)
+    
+    print(f'n0={n0}, fd={fd}, m={m}')
     assert dut.uo_out.value != 256
