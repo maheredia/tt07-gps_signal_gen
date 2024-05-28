@@ -30,7 +30,7 @@ always @(posedge clk, posedge rst) begin
     if (rst) begin
         acc_out <= {PHASE_ACC_BITS{1'b0}}  ; 
     end else if (ena) begin
-        acc_out <= acc_out + delta_phi_buf ; 
+        acc_out <= acc_out + delta_phi ; 
     end
 end
 

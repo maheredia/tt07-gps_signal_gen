@@ -68,47 +68,51 @@ async def test_project(dut):
     
     #Set sat_id to test_sat:
     await uart_send(dut,SAT_ID_ADDR)
-    await uart_send(dut,test_sat)
+    await uart_send(dut,test_sat-1)
     
-    #Set CA phase to 16:
+    #Set CA phase:
     await uart_send(dut,CA_PHASE_LO_ADDR)
-    await uart_send(dut,16)
+    await uart_send(dut,8)
     
     #Set doppler:
     await uart_send(dut,DOPPLER_ADDR)
-    await uart_send(dut,198)
-    
-    #Start CA phase adjustment:
-    await uart_send(dut,CTRL_ADDR)
-    await uart_send(dut,1<<3)
-    await ClockCycles(dut.clk, 1)
-    
-    #Wait for CA phase done:
-    while((dut.uo_out.value >> 2)%2 != 1):
-        await ClockCycles(dut.clk, 1)
+    await uart_send(dut,185)
     
     #Enable:
     await uart_send(dut,CTRL_ADDR)
     await uart_send(dut,1)
     
-    #Wait for some time and log the outputs:
+    #Wait for start::
+    while((dut.uo_out.value >> 3)%2 != 1):
+        await ClockCycles(dut.clk, 1)
+
+    #Log the outputs:
     sin_out = []
     cos_out = []
-    for i in range(2046):
+    for i in range(1023*16):
         sin_out.append(dut.uo_out.value%2)
         cos_out.append((dut.uo_out.value>>1)%2)
         await ClockCycles(dut.clk, 1)
-
+    print(f'Output length = {len(sin_out)}')
+    first_n = 10
+    print('Beginning of sine output:')
+    print(sin_out[:first_n])
+    print('Beginning of cosine output:')
+    print(cos_out[:first_n])
+    
     # Dummy assert, this should be improved with a real PASS/FAIL criterium: TODO
     sm = SearchModule()
     sm.set_n_sat(test_sat)
     n_search = []
-    for n in range(25):
+    for n in range(10):
         n_search.append(n)
     f_search = []
     for i_f in range(33):
-        f_search.append((i_f-16)*500)
-    (n0, fd, m) = sm.correlate_range(data_in=sin_out, n_range=n_search, fd_range=f_search, verbose=True)
+        f_search.append((i_f-16)*500.0)
+    print(f'CA phase search: {n_search}')
+    print(f'Doppler search: {f_search}')
+    (n0, fd, m) = sm.correlate_range(data_in=sin_out, n_range=n_search, fd_range=f_search, verbose=False)
     
     print(f'n0={n0}, fd={fd}, m={m}')
-    assert dut.uo_out.value != 256
+    assert n0 == 8
+    assert fd == -3500.0

@@ -17,7 +17,7 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {4'd0, start_out, code_phase_done, cos_out, sin_out};
+assign uo_out  = {4'd0, start_out, 1'b0, cos_out, sin_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
@@ -35,7 +35,6 @@ wire             ca_phase_start  ;
 wire [15:0]      ca_phase        ;
 wire [7:0]       doppler         ;
 wire [7:0]       snr             ;
-wire             code_phase_done ;
 
 //Register bank:
 reg_bank_reduced
@@ -75,7 +74,6 @@ gps_gen_core core
   .ca_phase_in         ( ca_phase        ),
   .doppler_in          ( doppler         ),
   .snr_in              ( snr             ),
-  .code_phase_done_out ( code_phase_done ),
   .start_out           ( start_out       ),
   .sin_out             ( sin_out         ),
   .cos_out             ( cos_out         ) 

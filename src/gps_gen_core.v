@@ -14,8 +14,7 @@ module gps_gen_core
   input [15:0]    ca_phase_in         ,
   input [7:0]     doppler_in          ,
   input [7:0]     snr_in              ,
-  output          code_phase_done_out ,
-  output          start_out           ,//TODO: define this one
+  output reg      start_out           ,
   output          sin_out             ,
   output          cos_out              
 );
@@ -26,15 +25,19 @@ localparam NCO_PHASE_ACC_BITS     = 15;
 localparam NCO_TRUNCATED_BITS     = 2 ;
 localparam NCO_DATA_BITS_OUT      = 1 ;
 localparam NB_NOISE_GEN           = 5 ;
+localparam GC_OVERSAMPLED_LENGTH  = 1023*16;
 
 //Internal signals:
 wire                              navigation_msg   ;
 reg  [15:0]                       gc_phase_cntr    ;
 wire                              gc_ena           ;
+reg  [3:0]                        gc_prescaler     ;
 wire                              gc               ;
 wire [NCO_FREQ_CTRL_WORD_LEN-1:0] nco_phi          ;
 wire                              nco_sin          ;
 wire                              nco_cos          ;
+reg                               nco_sin_reg      ;
+reg                               nco_cos_reg      ;
 wire                              cos_clean        ;
 wire                              sin_clean        ;
 wire [NB_NOISE_GEN-1:0]           noise            ;
@@ -44,25 +47,23 @@ wire [NB_NOISE_GEN:0]             output_adder     ;
 
 //Gold codes generator:
 
-//This counter lets the gc_gen advance its internal state until gor a
-//number of samples given by ca_phase_in. This will determine the
-//initial phase of the gc_gen.
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
   begin
     gc_phase_cntr <= 16'd0;
+    gc_prescaler  <= 4'b0000;
   end
   else if(ena_in==1'b1)
   begin
-    gc_phase_cntr <= 16'd0;
-  end
-  else if((ca_phase_start_in==1'b1) && (gc_phase_cntr < ca_phase_in))
-  begin
-    gc_phase_cntr <= gc_phase_cntr + 1'b1;
+    gc_prescaler <= gc_prescaler + 1'b1;
+    if(gc_phase_cntr < GC_OVERSAMPLED_LENGTH-1)
+      gc_phase_cntr <= gc_phase_cntr + 1'b1;
+    else
+      gc_phase_cntr <= 16'd0;
   end
 end
-assign gc_ena = (ca_phase_start_in & (gc_phase_cntr < ca_phase_in)) | ena_in;
+assign gc_ena = ena_in & &gc_prescaler;
 gc_gen gc_gen
 (
   .rst_in_n   ( rst_in_n  ),
@@ -90,14 +91,27 @@ nco
   .sin       ( nco_sin   ),
   .cos       ( nco_cos   ) 
 );
+always @ (posedge clk_in, negedge rst_in_n)
+begin
+  if(!rst_in_n)
+  begin
+    nco_sin_reg <= 1'b0;
+    nco_cos_reg <= 1'b0;
+  end
+  else
+  begin
+    nco_sin_reg <= nco_sin;
+    nco_cos_reg <= nco_cos;
+  end
+end
 
 //Message selector:
 //TODO: define message preset
 assign navigation_msg = msg_in;
 
 //Clean signals:
-assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin);
-assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos);
+assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin_reg);
+assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos_reg);
 
 //Noise generator:
 //TODO
@@ -106,9 +120,15 @@ assign noise = 0;
 //Output adder:
 //TODO:
 assign output_adder = 0;
+
 //Outputs:
-assign code_phase_done_out = (gc_phase_cntr >= ca_phase_in);
 assign sin_out   =  sin_clean; //TODO
 assign cos_out   =  cos_clean; //TODO
-assign start_out = 1'b0; //TODO 
+always @ (posedge clk_in, negedge rst_in_n)
+begin
+  if(!rst_in_n)
+    start_out <= 1'b0;
+  else
+    start_out <= ena_in & (gc_phase_cntr == ca_phase_in);
+end
 endmodule
