@@ -15,6 +15,7 @@ module gps_gen_core
   input [7:0]     doppler_in          ,
   input [7:0]     snr_in              ,
   output reg      start_out           ,
+  output reg      noise_start_out     ,
   output          sin_out             ,
   output          cos_out              
 );
@@ -25,6 +26,7 @@ localparam NCO_PHASE_ACC_BITS     = 15;
 localparam NCO_TRUNCATED_BITS     = 2 ;
 localparam NCO_DATA_BITS_OUT      = 1 ;
 localparam NB_NOISE_GEN           = 5 ;
+localparam NB_SIG_FULL            = 8 ;
 localparam GC_OVERSAMPLED_LENGTH  = 1023*16;
 
 //Internal signals:
@@ -40,8 +42,10 @@ reg                               nco_sin_reg      ;
 reg                               nco_cos_reg      ;
 wire                              cos_clean        ;
 wire                              sin_clean        ;
-wire [NB_NOISE_GEN-1:0]           noise            ;
-wire [NB_NOISE_GEN:0]             output_adder     ;
+wire signed [NB_SIG_FULL-1:0]     sin_full         ;
+wire signed [NB_NOISE_GEN-1:0]    noise            ;
+wire                              noise_start      ;
+wire signed [NB_SIG_FULL:0]       output_adder     ;
 
 /*------------------------LOGIC BEGINS----------------------------------*/
 
@@ -113,22 +117,39 @@ assign navigation_msg = msg_in;
 assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin_reg);
 assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos_reg);
 
-//Noise generator:
-//TODO
-assign noise = 0;
+//Noise generators:
+prng
+#(
+  .OUT_BITS(NB_NOISE_GEN)
+)
+prng_sin
+(
+  .clk_in    ( clk_in                     ),
+  .rst_in_n  ( rst_in_n & ~noise_off_in   ),
+  .ena_in    ( 1'b1                       ),
+  .start_out ( noise_start                ),
+  .lfsr_out  ( noise                      ) 
+);
 
 //Output adder:
-//TODO:
-assign output_adder = 0;
+//sin_full takes 0x7F or 0x80 values:
+assign sin_full = (sin_clean==1'b1) ? ({1'b1, {(NB_SIG_FULL-1){1'b0}}}) : ({1'b0, {(NB_SIG_FULL-1){1'b1}}});
+assign output_adder = noise + (sin_full >>> snr_in);
 
 //Outputs:
-assign sin_out   =  sin_clean; //TODO
+assign sin_out   =  output_adder[NB_SIG_FULL]; //TODO
 assign cos_out   =  cos_clean; //TODO
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
-    start_out <= 1'b0;
+  begin
+    start_out       <= 1'b0;
+    noise_start_out <= 1'b0;
+  end
   else
-    start_out <= ena_in & (gc_phase_cntr == ca_phase_in);
+  begin
+    start_out       <= ena_in & (gc_phase_cntr == ca_phase_in);
+    noise_start_out <= ~noise_off_in & noise_start;
+  end
 end
 endmodule

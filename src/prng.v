@@ -3,14 +3,14 @@ module prng
   parameter                   OUT_BITS      = 4 ,
   parameter                   N_BITS_REGS   = 31,
   parameter [63:0]            POLY          = 31'b1001000000000000000000000000000,
-  parameter [N_BITS_REGS-1:0] INITIAL_STATE = 1
+  parameter [N_BITS_REGS-1:0] INITIAL_STATE = (1<<(N_BITS_REGS-1))
 )
 (
-  input                    clk_in    ,
-  input                    rst_in_n  ,
-  input                    ena_in    ,
-  output                   start_out ,
-  output  [OUT_BITS-1:0]   lfsr_out    
+  input                           clk_in    ,
+  input                           rst_in_n  ,
+  input                           ena_in    ,
+  output                          start_out ,
+  output  signed [OUT_BITS-1:0]   lfsr_out    
 );
 
 //Internal signals:

@@ -23,6 +23,7 @@ project:
     - "nco.v"
     - "lookup_4x1_sine.v"
     - "lookup_4x1_cos.v"
+    - "prng.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:

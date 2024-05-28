@@ -17,7 +17,7 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {4'd0, start_out, 1'b0, cos_out, sin_out};
+assign uo_out  = {4'd0, start_out, noise_start_out, cos_out, sin_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
@@ -25,6 +25,7 @@ assign uio_oe  = 0;
 wire             sin_out         ;
 wire             cos_out         ;
 wire             start_out       ;
+wire             noise_start_out ;
 wire             general_enable  ;
 wire [4:0]       n_sat           ;
 wire             use_preset      ;
@@ -75,6 +76,7 @@ gps_gen_core core
   .doppler_in          ( doppler         ),
   .snr_in              ( snr             ),
   .start_out           ( start_out       ),
+  .noise_start_out     ( noise_start_out ),
   .sin_out             ( sin_out         ),
   .cos_out             ( cos_out         ) 
 );
