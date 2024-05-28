@@ -2,7 +2,7 @@ module prng
 #(
   parameter                   OUT_BITS      = 4 ,
   parameter                   N_BITS_REGS   = 31,
-  parameter [63:0]            POLY          = 31'b1001000000000000000000000000000,
+  parameter [30:0]            POLY          = 31'b1001000000000000000000000000000,
   parameter [N_BITS_REGS-1:0] INITIAL_STATE = (1<<(N_BITS_REGS-1))
 )
 (
@@ -16,7 +16,6 @@ module prng
 //Internal signals:
 reg  [N_BITS_REGS-1:0]    lfsr_reg    ;
 reg  [N_BITS_REGS-1:0]    lfsr_next   ;
-reg  [OUT_BITS-1:0]       lfsr_output ;
 integer                   ff          ;
 
 //PRBS:
