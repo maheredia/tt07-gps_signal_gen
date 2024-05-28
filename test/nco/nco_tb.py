@@ -85,12 +85,13 @@ async def nco_model_output_match_test(dut):
         dut_nco_sin = []
         dut_nco_cos = []
         
+        await initialize_module(dut)
         dut.delta_phi.value = delta_phi
 
         for i in range(SAMPLES):
-            await Timer(CLK_PERIOD, units=TIME_UNIT)
             dut_nco_sin.append(dut.sin.value)
             dut_nco_cos.append(dut.cos.value)
+            await Timer(CLK_PERIOD, units=TIME_UNIT)
             #Agrego resultado a diccionario
         dut_results.update({f"{delta_phi}" : (dut_nco_sin, dut_nco_cos)})
         
@@ -136,11 +137,11 @@ async def nco_model_internal_match_test(dut):
         dut.delta_phi.value = delta_phi
 
         for i in range(SAMPLES):
-            await Timer(CLK_PERIOD, units=TIME_UNIT)
             dut_nco_accum.append(int(dut.acc_out.value))
             dut_nco_trunc.append(int(dut.truncated_acc.value))
             dut_nco_sin.append(dut.sin.value)
             dut_nco_cos.append(dut.cos.value)
+            await Timer(CLK_PERIOD, units=TIME_UNIT)
             # Almaceno los valores de elementos internos del nco
         dut_accum.update({f"{delta_phi}" : dut_nco_accum})
         dut_trunc.update({f"{delta_phi}" : dut_nco_trunc})
