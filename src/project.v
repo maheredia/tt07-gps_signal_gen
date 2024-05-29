@@ -32,7 +32,6 @@ wire             use_preset      ;
 wire             use_msg_preset  ;
 wire             noise_off       ;
 wire             signal_off      ;
-wire             ca_phase_start  ;
 wire [15:0]      ca_phase        ;
 wire [7:0]       doppler         ;
 wire [7:0]       snr             ;
@@ -52,7 +51,7 @@ reg_bank
   .use_msg_preset_out ( use_msg_preset     ),
   .noise_off_out      ( noise_off          ),
   .signal_off_out     ( signal_off         ),
-  .ca_phase_start_out ( ca_phase_start     ),
+  .ca_phase_start_out (      ),//TODO:remove
   .ca_phase_out       ( ca_phase           ),
   .doppler_out        ( doppler            ),
   .snr_out            ( snr                )  
@@ -71,7 +70,6 @@ gps_gen_core core
   .use_msg_preset_in   ( use_msg_preset  ),
   .noise_off_in        ( noise_off       ),
   .signal_off_in       ( signal_off      ),
-  .ca_phase_start_in   ( ca_phase_start  ),
   .ca_phase_in         ( ca_phase        ),
   .doppler_in          ( doppler         ),
   .snr_in              ( snr             ),

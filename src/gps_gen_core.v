@@ -10,7 +10,6 @@ module gps_gen_core
   input           use_msg_preset_in   ,
   input           noise_off_in        ,
   input           signal_off_in       ,
-  input           ca_phase_start_in   ,
   input [15:0]    ca_phase_in         ,
   input [7:0]     doppler_in          ,
   input [7:0]     snr_in              ,
