@@ -5,9 +5,6 @@ module gps_gen_core
   input           ena_in              ,
   input           msg_in              ,
   input [4:0]     n_sat_in            ,
-  input           use_preset_in       ,
-  input [1:0]     preset_sel_in       ,
-  input           use_msg_preset_in   ,
   input           noise_off_in        ,
   input           signal_off_in       ,
   input [15:0]    ca_phase_in         ,
@@ -25,7 +22,7 @@ localparam NCO_PHASE_ACC_BITS     = 15;
 localparam NCO_TRUNCATED_BITS     = 2 ;
 localparam NCO_DATA_BITS_OUT      = 1 ;
 localparam NB_NOISE_GEN           = 5 ;
-localparam N_NOISE_GENERATORS     = 4 ;
+localparam N_NOISE_GENERATORS     = 5 ;
 localparam NB_NOISE_FULL          = NB_NOISE_GEN + $clog2(N_NOISE_GENERATORS);
 localparam NB_SIG_FULL            = NB_NOISE_FULL ;
 localparam GC_OVERSAMPLED_LENGTH  = 1023*16;
@@ -35,8 +32,6 @@ localparam MSG_PRESET             = 32'hFEEDCAFE             ;
 
 //Internal signals:
 wire                              nav_msg          ;
-reg  [31:0]                       nav_msg_prst_reg ;
-reg  [NB_MSG_CNTR-1:0]            nav_msg_cntr     ;
 reg  [15:0]                       gc_phase_cntr    ;
 wire                              gc_ena           ;
 reg  [3:0]                        gc_prescaler     ;
@@ -118,28 +113,7 @@ begin
 end
 
 //Message selector:
-always @ (posedge clk_in, negedge rst_in_n)
-begin
-  if(!rst_in_n)
-  begin
-    nav_msg_cntr     <= {(NB_MSG_CNTR){1'b0}};
-    nav_msg_prst_reg <= MSG_PRESET;
-  end
-  else if(ena_in==1'b1)
-  begin
-    if(nav_msg_cntr<MSG_BIT_LENGTH-1)
-    begin
-      nav_msg_cntr     <= nav_msg_cntr + 1'b1;
-      nav_msg_prst_reg <= nav_msg_prst_reg;
-    end
-    else
-    begin
-      nav_msg_cntr     <= {(NB_MSG_CNTR){1'b0}};
-      nav_msg_prst_reg <= {nav_msg_prst_reg[0], nav_msg_prst_reg[31:1]};
-    end
-  end
-end
-assign nav_msg = (use_msg_preset_in==1'b1) ? (nav_msg_prst_reg[0]) : (msg_in);
+assign nav_msg = msg_in;
 
 //Clean signals:
 assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (nav_msg^gc^nco_sin_reg);
