@@ -152,7 +152,7 @@ generate
   begin: prng_gen
     prng
     #(
-      .OUT_BITS(NB_NOISE_GEN)
+      .OUT_BITS(NB_NOISE_GEN),
       .INITIAL_STATE((ii+1)<<(N_BITS_REGS-1-N_NOISE_GENERATORS))
     )
     prng
