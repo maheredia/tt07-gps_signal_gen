@@ -27,9 +27,14 @@ localparam NCO_DATA_BITS_OUT      = 1 ;
 localparam NB_NOISE_GEN           = 5 ;
 localparam NB_SIG_FULL            = 8 ;
 localparam GC_OVERSAMPLED_LENGTH  = 1023*16;
+localparam MSG_BIT_LENGTH         = 20*GC_OVERSAMPLED_LENGTH ;
+localparam NB_MSG_CNTR            = $clog2(MSG_BIT_LENGTH)   ;
+localparam MSG_PRESET             = 32'hFEEDCAFE             ;
 
 //Internal signals:
-wire                              navigation_msg   ;
+wire                              nav_msg          ;
+reg  [31:0]                       nav_msg_prst_reg ;
+reg  [NB_MSG_CNTR-1:0]            nav_msg_cntr     ;
 reg  [15:0]                       gc_phase_cntr    ;
 wire                              gc_ena           ;
 reg  [3:0]                        gc_prescaler     ;
@@ -50,7 +55,6 @@ wire signed [NB_SIG_FULL:0]       output_adder     ;
 /*------------------------LOGIC BEGINS----------------------------------*/
 
 //Gold codes generator:
-
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
@@ -110,12 +114,32 @@ begin
 end
 
 //Message selector:
-//TODO: define message preset
-assign navigation_msg = msg_in;
+always @ (posedge clk_in, negedge rst_in_n)
+begin
+  if(!rst_in_n)
+  begin
+    nav_msg_cntr     <= {(NB_MSG_CNTR){1'b0}};
+    nav_msg_prst_reg <= MSG_PRESET;
+  end
+  else if(ena_in==1'b1)
+  begin
+    if(nav_msg_cntr<MSG_BIT_LENGTH-1)
+    begin
+      nav_msg_cntr     <= nav_msg_cntr + 1'b1;
+      nav_msg_prst_reg <= nav_msg_prst_reg;
+    end
+    else
+    begin
+      nav_msg_cntr     <= {(NB_MSG_CNTR){1'b0}};
+      nav_msg_prst_reg <= {nav_msg_prst_reg[0], nav_msg_prst_reg[31:1]}
+    end
+  end
+end
+assign nav_msg = (use_msg_preset_in==1'b1) ? (nav_msg_prst_reg[0]) : (msg_in);
 
 //Clean signals:
-assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_sin_reg);
-assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (navigation_msg^gc^nco_cos_reg);
+assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (nav_msg^gc^nco_sin_reg);
+assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (nav_msg^gc^nco_cos_reg);
 
 //Noise generators:
 prng
