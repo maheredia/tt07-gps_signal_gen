@@ -51,7 +51,7 @@ wire                              sin_clean        ;
 wire signed [NB_SIG_FULL-1:0]     sin_full         ;
 wire signed [NB_SIG_FULL-1:0]     sin_shft         ;
 wire signed [NB_NOISE_GEN-1:0]    noise[N_NOISE_GENERATORS-1:0] ;
-wire signed [NB_NOISE_FULL-1:0]   noise_full       ;
+reg  signed [NB_NOISE_FULL-1:0]   noise_full       ;
 wire [N_NOISE_GENERATORS-1:0]     noise_start      ;
 wire signed [NB_SIG_FULL:0]       output_adder     ;
 integer                           i_n              ;
