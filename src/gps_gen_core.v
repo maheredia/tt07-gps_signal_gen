@@ -42,6 +42,7 @@ reg                               nco_cos_reg      ;
 wire                              cos_clean        ;
 wire                              sin_clean        ;
 wire signed [NB_SIG_FULL-1:0]     sin_full         ;
+wire signed [NB_SIG_FULL-1:0]     sin_shft         ;
 wire signed [NB_NOISE_GEN-1:0]    noise            ;
 wire                              noise_start      ;
 wire signed [NB_SIG_FULL:0]       output_adder     ;
@@ -133,7 +134,8 @@ prng_sin
 //Output adder:
 //sin_full takes 0x7F or 0x80 values:
 assign sin_full = (sin_clean==1'b1) ? ({1'b1, {(NB_SIG_FULL-1){1'b0}}}) : ({1'b0, {(NB_SIG_FULL-1){1'b1}}});
-assign output_adder = noise + (sin_full >>> snr_in);
+assign sin_shft = (sin_full >>> snr_in);
+assign output_adder = noise + sin_shft;
 
 //Outputs:
 assign sin_out   =  output_adder[NB_SIG_FULL]; //TODO
