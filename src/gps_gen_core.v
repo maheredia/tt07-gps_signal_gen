@@ -131,7 +131,7 @@ begin
     else
     begin
       nav_msg_cntr     <= {(NB_MSG_CNTR){1'b0}};
-      nav_msg_prst_reg <= {nav_msg_prst_reg[0], nav_msg_prst_reg[31:1]}
+      nav_msg_prst_reg <= {nav_msg_prst_reg[0], nav_msg_prst_reg[31:1]};
     end
   end
 end
