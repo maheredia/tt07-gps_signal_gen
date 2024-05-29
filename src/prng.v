@@ -1,9 +1,9 @@
 module prng
 #(
-  parameter                   OUT_BITS      = 4 ,
-  parameter                   N_BITS_REGS   = 31,
-  parameter [30:0]            POLY          = 31'b1001000000000000000000000000000,
-  parameter [N_BITS_REGS-1:0] INITIAL_STATE = (1<<(N_BITS_REGS-1))
+  parameter         OUT_BITS            = 4 ,
+  parameter         N_BITS_REGS         = 31,
+  parameter [30:0]  POLY                = 31'b1001000000000000000000000000000,
+  parameter         INITIAL_STATE_SHIFT = (N_BITS_REGS-1)
 )
 (
   input                           clk_in    ,
@@ -12,6 +12,9 @@ module prng
   output                          start_out ,
   output  signed [OUT_BITS-1:0]   lfsr_out    
 );
+
+//Local parameters:
+localparam INITIAL_STATE = (1<<(INITIAL_STATE_SHIFT));
 
 //Internal signals:
 reg  [N_BITS_REGS-1:0]    lfsr_reg    ;

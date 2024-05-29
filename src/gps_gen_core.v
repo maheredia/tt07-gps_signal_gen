@@ -153,7 +153,7 @@ generate
     prng
     #(
       .OUT_BITS(NB_NOISE_GEN),
-      .INITIAL_STATE((ii+1)<<(N_BITS_REGS-1-N_NOISE_GENERATORS))
+      .INITIAL_STATE_SHIFT(16+2*ii)
     )
     prng
     (
@@ -171,7 +171,7 @@ begin
   noise_full = {(NB_NOISE_FULL){1'b0}};
   for(i_n=0; i_n<N_NOISE_GENERATORS; i_n=i_n+1)
   begin
-    noise_full = noise_full + noise[i];
+    noise_full = noise_full + noise[i_n];
   end
 end
 
