@@ -78,13 +78,13 @@ async def test_project(dut):
     await uart_send(dut,DOPPLER_ADDR)
     await uart_send(dut,185)
     
-    #Disable noise:
-    await uart_send(dut,CTRL_ADDR)
-    await uart_send(dut,0x10)
+    #Set SNR shift:
+    await uart_send(dut,SNR_ADDR)
+    await uart_send(dut,3)
     
-    #Enable:
+    #General enable:
     await uart_send(dut,CTRL_ADDR)
-    await uart_send(dut,0x11)
+    await uart_send(dut,0x1)
     
     #Wait for start::
     while((dut.uo_out.value >> 3)%2 != 1):
