@@ -25,7 +25,9 @@ localparam NCO_PHASE_ACC_BITS     = 15;
 localparam NCO_TRUNCATED_BITS     = 2 ;
 localparam NCO_DATA_BITS_OUT      = 1 ;
 localparam NB_NOISE_GEN           = 5 ;
-localparam NB_SIG_FULL            = 8 ;
+localparam N_NOISE_GENERATORS     = 5 ;
+localparam NB_NOISE_FULL          = NB_NOISE_GEN + $clog2(N_NOISE_GENERATORS);
+localparam NB_SIG_FULL            = NB_NOISE_FULL ;
 localparam GC_OVERSAMPLED_LENGTH  = 1023*16;
 localparam MSG_BIT_LENGTH         = 20*GC_OVERSAMPLED_LENGTH ;
 localparam NB_MSG_CNTR            = $clog2(MSG_BIT_LENGTH)   ;
@@ -48,9 +50,11 @@ wire                              cos_clean        ;
 wire                              sin_clean        ;
 wire signed [NB_SIG_FULL-1:0]     sin_full         ;
 wire signed [NB_SIG_FULL-1:0]     sin_shft         ;
-wire signed [NB_NOISE_GEN-1:0]    noise            ;
-wire                              noise_start      ;
+wire signed [NB_NOISE_GEN-1:0]    noise[N_NOISE_GENERATORS-1:0] ;
+wire signed [NB_NOISE_FULL-1:0]   noise_full       ;
+wire [N_NOISE_GENERATORS-1:0]     noise_start      ;
 wire signed [NB_SIG_FULL:0]       output_adder     ;
+integer                           i_n              ;
 
 /*------------------------LOGIC BEGINS----------------------------------*/
 
@@ -142,27 +146,43 @@ assign sin_clean = (signal_off_in == 1'b1) ? (1'b0) : (nav_msg^gc^nco_sin_reg);
 assign cos_clean = (signal_off_in == 1'b1) ? (1'b0) : (nav_msg^gc^nco_cos_reg);
 
 //Noise generators:
-prng
-#(
-  .OUT_BITS(NB_NOISE_GEN)
-)
-prng_sin
-(
-  .clk_in    ( clk_in                     ),
-  .rst_in_n  ( rst_in_n & ~noise_off_in   ),
-  .ena_in    ( 1'b1                       ),
-  .start_out ( noise_start                ),
-  .lfsr_out  ( noise                      ) 
-);
+genvar ii;
+generate
+  for(ii=0; ii<N_NOISE_GENERATORS; ii=ii+1)
+  begin: prng_gen
+    prng
+    #(
+      .OUT_BITS(NB_NOISE_GEN)
+      .INITIAL_STATE((ii+1)<<(N_BITS_REGS-1-N_NOISE_GENERATORS))
+    )
+    prng
+    (
+      .clk_in    ( clk_in                     ),
+      .rst_in_n  ( rst_in_n & ~noise_off_in   ),
+      .ena_in    ( 1'b1                       ),
+      .start_out ( noise_start[ii]            ),
+      .lfsr_out  ( noise[ii]                  ) 
+    );
+  end
+endgenerate
+
+always @(*)
+begin
+  noise_full = {(NB_NOISE_FULL){1'b0}};
+  for(i_n=0; i_n<N_NOISE_GENERATORS; i_n=i_n+1)
+  begin
+    noise_full = noise_full + noise[i];
+  end
+end
 
 //Output adder:
 //sin_full takes 0x7F or 0x80 values:
 assign sin_full = (sin_clean==1'b1) ? ({1'b1, {(NB_SIG_FULL-1){1'b0}}}) : ({1'b0, {(NB_SIG_FULL-1){1'b1}}});
 assign sin_shft = (sin_full >>> snr_in);
-assign output_adder = noise + sin_shft;
+assign output_adder = noise_full + sin_shft;
 
 //Outputs:
-assign sin_out   =  output_adder[NB_SIG_FULL]; //TODO
+assign sin_out   =  output_adder[NB_SIG_FULL];
 assign cos_out   =  cos_clean; //TODO
 always @ (posedge clk_in, negedge rst_in_n)
 begin
@@ -174,7 +194,7 @@ begin
   else
   begin
     start_out       <= ena_in & (gc_phase_cntr == ca_phase_in);
-    noise_start_out <= ~noise_off_in & noise_start;
+    noise_start_out <= ~noise_off_in & noise_start[0];
   end
 end
 endmodule
