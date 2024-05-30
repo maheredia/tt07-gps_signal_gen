@@ -19,6 +19,7 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,gc_gen.v)
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,nco.v)
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,lookup_4x1_sine.v)
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,lookup_4x1_cos.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,prng.v)
 COMPILE_ARGS 		+= -I$(SRC_DIR)
 
 else

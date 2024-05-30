@@ -17,7 +17,7 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {4'd0, start_out, code_phase_done, cos_out, sin_out};
+assign uo_out  = {4'd0, start_out, noise_start_out, cos_out, sin_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
@@ -25,17 +25,15 @@ assign uio_oe  = 0;
 wire             sin_out         ;
 wire             cos_out         ;
 wire             start_out       ;
+wire             noise_start_out ;
 wire             general_enable  ;
 wire [4:0]       n_sat           ;
 wire             use_preset      ;
-wire             use_msg_preset  ;
 wire             noise_off       ;
 wire             signal_off      ;
-wire             ca_phase_start  ;
 wire [15:0]      ca_phase        ;
 wire [7:0]       doppler         ;
 wire [7:0]       snr             ;
-wire             code_phase_done ;
 
 //Register bank:
 reg_bank_reduced
@@ -49,10 +47,10 @@ reg_bank
   .rx_in              ( ui_in[0]           ),
   .enable_out         ( general_enable     ),
   .n_sat_out          ( n_sat              ),
-  .use_msg_preset_out ( use_msg_preset     ),
+  .use_msg_preset_out (      ),
   .noise_off_out      ( noise_off          ),
   .signal_off_out     ( signal_off         ),
-  .ca_phase_start_out ( ca_phase_start     ),
+  .ca_phase_start_out (      ),//TODO:remove
   .ca_phase_out       ( ca_phase           ),
   .doppler_out        ( doppler            ),
   .snr_out            ( snr                )  
@@ -66,17 +64,13 @@ gps_gen_core core
   .ena_in              ( general_enable  ),
   .msg_in              ( ui_in[1]        ),
   .n_sat_in            ( n_sat           ),
-  .use_preset_in       ( 1'b0            ),
-  .preset_sel_in       ( ui_in[3:2]      ),
-  .use_msg_preset_in   ( use_msg_preset  ),
   .noise_off_in        ( noise_off       ),
   .signal_off_in       ( signal_off      ),
-  .ca_phase_start_in   ( ca_phase_start  ),
   .ca_phase_in         ( ca_phase        ),
   .doppler_in          ( doppler         ),
   .snr_in              ( snr             ),
-  .code_phase_done_out ( code_phase_done ),
   .start_out           ( start_out       ),
+  .noise_start_out     ( noise_start_out ),
   .sin_out             ( sin_out         ),
   .cos_out             ( cos_out         ) 
 );

@@ -31,7 +31,6 @@ wire                  rx_data_sync  ;
 reg  [2:0]            current_state ;
 reg  [2:0]            next_state    ;
 
-reg                   cntr_ena      ;
 wire [NB_CNTR-1:0]    cntr_limit    ;
 reg                   cntr_limit_sel;
 reg  [NB_CNTR-1:0]    cntr          ;
@@ -142,7 +141,6 @@ begin
 case (current_state)
   IDLE:
   begin
-    cntr_ena       = 1'b0;
     cntr_limit_sel = 1'b0;
     rx_shift_ena   = 1'b0;
     rx_dv          = 1'b0;
@@ -156,7 +154,6 @@ case (current_state)
   //Find middle of start bit and check that it is still low
   START_BIT:
   begin
-    cntr_ena       = 1'b1;
     cntr_limit_sel = 1'b0;
     rx_shift_ena   = 1'b0;
     rx_dv          = 1'b0;
@@ -175,7 +172,6 @@ case (current_state)
   //Sample serial data every CLKS_PER_BIT-1 clock cycles.
   GET_DATA:
   begin
-    cntr_ena       = 1'b1;
     cntr_limit_sel = 1'b1;
     rx_shift_ena   = 1'b1;
     rx_dv          = 1'b0;
@@ -188,7 +184,6 @@ case (current_state)
 
   STOP_BIT:
   begin
-    cntr_ena       = 1'b1;
     cntr_limit_sel = 1'b1;
     rx_shift_ena   = 1'b0;
     rx_dv          = 1'b0;
@@ -202,7 +197,6 @@ case (current_state)
 
   DONE:
   begin
-    cntr_ena       = 1'b0;
     cntr_limit_sel = 1'b0;
     rx_shift_ena   = 1'b0;
     rx_dv          = 1'b1;
@@ -212,7 +206,6 @@ case (current_state)
    
   default:
   begin
-    cntr_ena       = 1'b0;
     cntr_limit_sel = 1'b0;
     rx_shift_ena   = 1'b0;
     rx_dv          = 1'b0;

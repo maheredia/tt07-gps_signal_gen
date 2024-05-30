@@ -36,7 +36,7 @@ wire [7:0]  rx_data      ;
 
 //Registers:
 reg [7:0]   ctrl_reg        ; //WO
-reg [7:0]   sat_id_reg      ; //WO
+reg [4:0]   sat_id_reg      ; //WO
 reg [7:0]   doppler_reg     ; //WO
 reg [7:0]   ca_phase_lo_reg ; //WO
 reg [7:0]   ca_phase_hi_reg ; //WO
@@ -69,7 +69,7 @@ begin
   if(!rst_in_n)
   begin
     ctrl_reg        <= 8'h02; //Start with msg preset
-    sat_id_reg      <= 8'h00;
+    sat_id_reg      <= 5'h00;
     doppler_reg     <= 8'hC0; //192
     ca_phase_lo_reg <= 8'h00;
     ca_phase_hi_reg <= 8'h00;
@@ -78,12 +78,12 @@ begin
   else if(we==1'b1 && rx_data_valid==1'b1)
   begin
     case(addr)
-      CTRL_ADDR        : ctrl_reg        <= rx_data;
-      SAT_ID_ADDR      : sat_id_reg      <= rx_data;
-      DOPPLER_ADDR     : doppler_reg     <= rx_data;
-      CA_PHASE_LO_ADDR : ca_phase_lo_reg <= rx_data;
-      CA_PHASE_HI_ADDR : ca_phase_hi_reg <= rx_data;
-      SNR_ADDR         : snr_reg         <= rx_data;
+      CTRL_ADDR        : ctrl_reg        <= rx_data     ;
+      SAT_ID_ADDR      : sat_id_reg      <= rx_data[4:0];
+      DOPPLER_ADDR     : doppler_reg     <= rx_data     ;
+      CA_PHASE_LO_ADDR : ca_phase_lo_reg <= rx_data     ;
+      CA_PHASE_HI_ADDR : ca_phase_hi_reg <= rx_data     ;
+      SNR_ADDR         : snr_reg         <= rx_data     ;
     endcase
   end
 end
@@ -99,7 +99,7 @@ end
 
 //Outputs:
 assign enable_out         = ctrl_reg[0]       ;
-assign n_sat_out          = sat_id_reg[4:0]   ;
+assign n_sat_out          = sat_id_reg        ;
 assign use_msg_preset_out = ctrl_reg[1]       ;
 assign ca_phase_start_out = ctrl_reg[3]       ;
 assign noise_off_out      = ctrl_reg[4]       ;
