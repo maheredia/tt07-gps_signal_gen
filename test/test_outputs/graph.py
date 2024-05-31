@@ -1,7 +1,7 @@
 """
 Use this file to graph search results from test_outputs/ dir
 Example:
-    python3 graph.py -i test_outputs/PASSresult_1_192_3383_0.txt
+    python3 graph.py -i PASSresult_1_192_3383_0.txt
 """
 import os
 import sys
