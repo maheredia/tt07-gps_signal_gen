@@ -28,34 +28,34 @@ project:
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 pinout:
   # Inputs
-  ui[0]: "TODO!"
-  ui[1]: "TODO!"
-  ui[2]: "TODO!"
-  ui[3]: "TODO!"
-  ui[4]: "TODO!"
-  ui[5]: "TODO!"
-  ui[6]: "TODO!"
-  ui[7]: "TODO!"
+  ui[0]: "msg_in - Used to modulate GPS signal with custom navigation message."
+  ui[1]: "Not used"
+  ui[2]: "Not used"
+  ui[3]: "rx_in - UART rx input. Used to configure the register bank."
+  ui[4]: "Not used"
+  ui[5]: "Not used"
+  ui[6]: "Not used"
+  ui[7]: "Not used"
 
   # Outputs
-  uo[0]: "TODO"
-  uo[1]: "TODO"
-  uo[2]: "TODO"
-  uo[3]: "TODO"
-  uo[4]: "TODO"
-  uo[5]: "TODO"
-  uo[6]: "TODO"
-  uo[7]: "TODO"
+  uo[0]: "sin_out - Sine output with CA+msg modulation + noise."
+  uo[1]: "cos_out - Cosine output with CA+msg modulation (no noise)."
+  uo[2]: "noise_start_out - Start of PRNG sequence used as noise."
+  uo[3]: "start_out - Start of GPS signal. This output goes high when the configured phase matches the actual phase of the output signal."
+  uo[4]: "Not used"
+  uo[5]: "Not used"
+  uo[6]: "Not used"
+  uo[7]: "Not used"
 
   # Bidirectional pins
-  uio[0]: "TODO"
-  uio[1]: "TODO"
-  uio[2]: "TODO"
-  uio[3]: "TODO"
-  uio[4]: "TODO"
-  uio[5]: "TODO"
-  uio[6]: "TODO"
-  uio[7]: "TODO"
+  uio[0]: "Not used"
+  uio[1]: "Not used"
+  uio[2]: "Not used"
+  uio[3]: "Not used"
+  uio[4]: "Not used"
+  uio[5]: "Not used"
+  uio[6]: "Not used"
+  uio[7]: "Not used"
 
 # Do not change!
 yaml_version: 6
