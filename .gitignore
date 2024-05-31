@@ -19,3 +19,6 @@ test/*/__pycache__/
 test/*/iverilog_dump.v
 test/*/results.xml
 test/*/sim_build/
+test/test_outputs/*.txt
+test/test_outputs/*.LOG
+
