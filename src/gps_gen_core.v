@@ -157,7 +157,7 @@ assign output_adder = noise_full + sin_shft;
 
 //Outputs:
 assign sin_out   =  output_adder[NB_SIG_FULL];
-assign cos_out   =  cos_clean; //TODO
+assign cos_out   =  cos_clean;
 always @ (posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)

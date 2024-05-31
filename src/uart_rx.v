@@ -2,7 +2,7 @@
 // CLKS_PER_BIT = (Frequency of clk_in)/(Frequency of UART)
 // Example: 16.368 MHz Clock, 115200 baud UART
 // (16368000 / 115200) ~= 142
-//TODO: CHECK WHOLE ARCHITECTURE AND TEST!
+
 module uart_rx 
 #(
   parameter CLKS_PER_BIT = 142

@@ -46,10 +46,8 @@ reg_bank
   .rx_in              ( ui_in[3]           ),
   .enable_out         ( general_enable     ),
   .n_sat_out          ( n_sat              ),
-  .use_msg_preset_out (      ),
   .noise_off_out      ( noise_off          ),
   .signal_off_out     ( signal_off         ),
-  .ca_phase_start_out (      ),//TODO:remove
   .ca_phase_out       ( ca_phase           ),
   .doppler_out        ( doppler            ),
   .snr_out            ( snr                )  
