@@ -17,7 +17,7 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {4'd0, start_out, noise_start_out, cos_out, sin_out};
+assign uo_out  = {3'd0, clk, start_out, noise_start_out, cos_out, sin_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
