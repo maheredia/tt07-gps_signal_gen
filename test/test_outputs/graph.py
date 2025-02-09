@@ -39,16 +39,11 @@ with open(filename, 'r') as f_in:
         fd_results.append(float(lines[1]))
         search_results.append(float(lines[2]))
 
-# ax = plt.axes(projection='3d')
-# zdata = search_results[1:]
-# xdata = n_results[1:]
-# ydata = fd_results[1:]
-# ax.scatter3D(xdata, ydata, zdata, c=zdata);
-
 fig = plt.figure()
-ax = plt.axes(projection ='3d') 
+ax = plt.axes(projection ='3d')
 ax.plot(n_results, fd_results, search_results, 'green')
+#ax.scatter(n_results, fd_results, search_results, c=search_results)
 ax.set_title('GPS Search results')
 plt.show()
 
-#if args.save:
+#if args.save: TODO

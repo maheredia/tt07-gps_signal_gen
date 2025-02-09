@@ -17,7 +17,7 @@ module tt_um_maheredia (
 );
 
 //All output pins must be assigned. If not used, assign to 0.
-assign uo_out  = {4'd0, start_out, noise_start_out, cos_out, sin_out};
+assign uo_out  = {3'd0, clk, start_out, noise_start_out, cos_out, sin_out};
 assign uio_out = 0;
 assign uio_oe  = 0;
 
@@ -28,7 +28,6 @@ wire             start_out       ;
 wire             noise_start_out ;
 wire             general_enable  ;
 wire [4:0]       n_sat           ;
-wire             use_preset      ;
 wire             noise_off       ;
 wire             signal_off      ;
 wire [15:0]      ca_phase        ;
@@ -44,13 +43,11 @@ reg_bank
 (
   .clk_in             ( clk                ),
   .rst_in_n           ( rst_n              ),
-  .rx_in              ( ui_in[0]           ),
+  .rx_in              ( ui_in[3]           ),
   .enable_out         ( general_enable     ),
   .n_sat_out          ( n_sat              ),
-  .use_msg_preset_out (      ),
   .noise_off_out      ( noise_off          ),
   .signal_off_out     ( signal_off         ),
-  .ca_phase_start_out (      ),//TODO:remove
   .ca_phase_out       ( ca_phase           ),
   .doppler_out        ( doppler            ),
   .snr_out            ( snr                )  
@@ -62,7 +59,7 @@ gps_gen_core core
   .clk_in              ( clk             ),
   .rst_in_n            ( rst_n           ),
   .ena_in              ( general_enable  ),
-  .msg_in              ( ui_in[1]        ),
+  .msg_in              ( ui_in[0]        ),
   .n_sat_in            ( n_sat           ),
   .noise_off_in        ( noise_off       ),
   .signal_off_in       ( signal_off      ),

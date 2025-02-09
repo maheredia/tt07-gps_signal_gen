@@ -8,13 +8,11 @@ module reg_bank_reduced
   input                 rx_in               ,
   output                enable_out          ,
   output [4:0]          n_sat_out           ,
-  output                use_msg_preset_out  ,
   output                noise_off_out       ,
   output                signal_off_out      ,
-  output                ca_phase_start_out  ,
   output [15:0]         ca_phase_out        ,
   output [7:0]          doppler_out         ,
-  output [7:0]          snr_out               //TODO: check width
+  output [7:0]          snr_out              
 );
 
 //Local parameters:
@@ -68,12 +66,12 @@ always @(posedge clk_in, negedge rst_in_n)
 begin
   if(!rst_in_n)
   begin
-    ctrl_reg        <= 8'h02; //Start with msg preset
+    ctrl_reg        <= 8'h00;
     sat_id_reg      <= 5'h00;
     doppler_reg     <= 8'hC0; //192
     ca_phase_lo_reg <= 8'h00;
     ca_phase_hi_reg <= 8'h00;
-    snr_reg         <= 8'h00; //TODO: check default values
+    snr_reg         <= 8'h00;
   end
   else if(we==1'b1 && rx_data_valid==1'b1)
   begin
@@ -100,13 +98,11 @@ end
 //Outputs:
 assign enable_out         = ctrl_reg[0]       ;
 assign n_sat_out          = sat_id_reg        ;
-assign use_msg_preset_out = ctrl_reg[1]       ;
-assign ca_phase_start_out = ctrl_reg[3]       ;
 assign noise_off_out      = ctrl_reg[4]       ;
 assign signal_off_out     = ctrl_reg[5]       ;
 assign ca_phase_out       = {ca_phase_hi_reg, ca_phase_lo_reg};
 assign doppler_out        = doppler_reg       ;
-assign snr_out            = snr_reg           ; //TODO: CHECK WIDTH
+assign snr_out            = snr_reg           ;
 
 //FSM: sequential logic
 always @ (posedge clk_in, negedge rst_in_n)
