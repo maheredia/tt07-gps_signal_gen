@@ -2,7 +2,9 @@
 
 The main purpose of these tests is to determine the mapping from SNR configuration in register bank to actual change in dB at the output.
 
-A secondary purpose is to create the noise histogram by running simulations of the generated noise.
+A secondary purpose is to create the noise histogram by running simulations of the generated noise:
+
+![histogram](./histogram_10_periods.png)
 
 ## How to run:
 

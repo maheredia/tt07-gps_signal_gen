@@ -2,10 +2,12 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, Timer, RisingEdge, Combine
 import numpy as np
+import matplotlib.pyplot as plt
 
 CLK_PERIOD = 61.094
 TIME_UNIT = "ns"
 N_SAMPLES = 2*1023*16
+N_NOISE_SAMPLES = 10*1023*16
 
 async def initialize_module(dut):
     cocotb.start_soon(Clock(dut.clk_in, CLK_PERIOD, units=TIME_UNIT).start())
@@ -26,7 +28,6 @@ async def snr_measurement(dut):
     """
     Meassure the SNR for each value configured.
     """
-    min_period = 1023*16*10
     dut._log.info("Starting snr_measurement test")
     dut._log.info("Init dut")
     await initialize_module(dut)
@@ -100,3 +101,40 @@ async def snr_measurement(dut):
         print(f'snr = {k} ---------> {snr_table[k]} dB')
 
 
+@cocotb.test()
+async def noise_histogram(dut):
+    """
+    Meassure the output of signal generator to compute the noise histogram.
+    """
+    dut._log.info("Starting noise_histogram test")
+    dut._log.info("Init dut")
+    await initialize_module(dut)
+    #Turn on noise and enable:
+    await ClockCycles(dut.clk_in, 10)
+    dut.noise_off_in.value = 0
+    dut.ena_in.value = 1
+    #Wait for noise start signal:
+    start=0
+    dut._log.info("Waiting for first start")
+    while(start==0):
+        start = dut.noise_start_out.value
+        await ClockCycles(dut.clk_in, 1)
+    #Now, start collecting noise samples:
+    samples = np.zeros(0)
+    start=0
+    i=0
+    dut._log.info("Waiting for next start or sample limit")
+    while(start==0 and i<N_NOISE_SAMPLES):
+        start = dut.noise_start_out.value
+        samples = np.append(samples, dut.noise_full.value.signed_integer)
+        await ClockCycles(dut.clk_in, 1)
+        i=i+1
+    filename = f'noise_full.csv'
+    np.savetxt(fname=filename, X=np.array(samples), fmt='%d')
+    #Make histogram:
+    num_bins = 20
+    n, bins, _ = plt.hist(samples, num_bins, density=True, color='green', alpha=0.7)
+    plt.xlabel('X-Axis')
+    plt.ylabel('Y-Axis')
+    plt.title('Histogram of noise generator', fontweight='bold')
+    plt.savefig('histogram.png')
