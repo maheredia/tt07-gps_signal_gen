@@ -1,0 +1,62 @@
+TEST_DIR := $(PWD)
+SRC_DIR = $(PWD)/../../../src
+
+SIM ?= icarus
+TOPLEVEL_LANG ?= verilog
+WAVES ?= 0
+
+#Simulation directory:
+SIM_BUILD = $(TEST_DIR)/sim_build
+#Output results file
+COCOTB_RESULTS_FILE = $(TEST_DIR)/results.xml
+
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,gps_gen_core.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,gc_gen.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,nco.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,lookup_4x1_sine.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,lookup_4x1_cos.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,prng.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,reg_bank.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,uart_tx.v)
+VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,uart_rx.v)
+VERILOG_SOURCES += bench_top.v
+
+TOPLEVEL = gps_gen_core
+
+MODULE = phase_estimation
+COMPILE_ARGS += -Pprng.OUT_BITS=5
+
+ifeq ($(WAVES), 1)
+ifeq ($(SIM), icarus) # Hack for iverilog (should be before the Makefile include)
+	VERILOG_SOURCES += $(TEST_DIR)/iverilog_dump.v
+	COMPILE_ARGS += -s iverilog_dump
+endif
+endif
+
+
+# include cocotb's make rules to take care of the simulator setup
+include $(shell cocotb-config --makefiles)/Makefile.sim
+
+ifeq ($(WAVES), 1)
+#Generate iverilog_dump.v
+ifeq ($(SIM), icarus) # Hack for iverilog (should be after the Makefile include)
+$(TEST_DIR)/iverilog_dump.v:
+	@echo 'module iverilog_dump();' > $@
+	@echo 'initial begin' >> $@
+	@echo '    $$dumpfile("$(TEST_DIR)/$(TOPLEVEL).vcd");' >> $@
+	@echo '    $$dumpvars(0, $(TOPLEVEL));' >> $@
+	@echo 'end' >> $@
+	@echo 'endmodule' >> $@
+endif
+endif
+
+
+view:
+	@echo "Opening waveform viewer..."
+	gtkwave $(TEST_DIR)/$(TOPLEVEL).vcd &
+
+clean::
+	@echo "Removing unnecessary files..."
+	@rm -fr $(TEST_DIR)/__pycache__ $(TEST_DIR)/*.vcd $(TEST_DIR)/*.xml \
+	$(TEST_DIR)/*.o $(TEST_DIR)/plots $(TEST_DIR)/iverilog_dump.v
+	@echo "Done"
