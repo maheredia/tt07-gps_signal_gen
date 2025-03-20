@@ -4,6 +4,7 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, Timer
+import math
 
 CLK_PERIOD = 61.094
 BIT_PERIOD = 8600
@@ -89,6 +90,14 @@ async def shift_nco_down(dut, n_times):
         dut.btns_in.value = 0
         await Timer(1000, units=TIME_UNIT)
 
+def measure_phase(dut):
+    I = dut.accum_I_last.value.signed_integer
+    Q = dut.accum_Q_last.value.signed_integer
+    phase = 180.0*math.atan(Q/I)/math.pi
+    if(I < 0 and Q < 0):
+        phase = phase + 180.0
+    return phase
+
 @cocotb.test()
 async def test_project(dut):
     dut._log.info("Start")
@@ -101,13 +110,16 @@ async def test_project(dut):
     await uart_send(dut,CTRL_ADDR)
     await uart_send(dut,0x11,wait_at_stop=False)
     await ClockCycles(dut.clk_in, 100000)
-    #Start shifting the bench NCO:
-    await shift_nco_up(dut, 1)
-    await ClockCycles(dut.clk_in, 50000)
-    await shift_nco_up(dut, 1)
-    await ClockCycles(dut.clk_in, 50000)
-    await shift_nco_up(dut, 1)
-    await ClockCycles(dut.clk_in, 50000)
-    await shift_nco_up(dut, 1)
-    await ClockCycles(dut.clk_in, 50000)
+
+    #Start shifting the bench NCO and reading phase estimation:
+    #First, no phase shift, output phase should be 0°
+    phase = measure_phase(dut)
+    print(f'PHASE ESTIMATION #0 = {phase} °')
+
+    #Shift and measure:
+    for i in range(4):
+        await shift_nco_up(dut, 1)
+        await ClockCycles(dut.clk_in, 50000)
+        phase = measure_phase(dut)
+        print(f'PHASE ESTIMATION #{i+1} = {phase} °')
     

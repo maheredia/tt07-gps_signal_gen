@@ -8,7 +8,7 @@ module bench_top
   input           msg_in   ,
   input  [3:0]    btns_in  ,
   input           rx_in    ,
-  output          tx_out   ,
+  //output          tx_out   ,
   output [3:0]    leds_out  
 );
 
@@ -59,6 +59,12 @@ reg [15:0]        accum_cntr       ;
 reg               accum_done       ;
 reg signed [15:0] accum_I_last     ;
 reg signed [15:0] accum_Q_last     ;
+//Bench PWM to LEDs:
+reg [15:0]        pwm_cntr         ;
+reg [15:0]        I_pos_ref        ;
+reg [15:0]        I_neg_ref        ;
+reg [15:0]        Q_pos_ref        ;
+reg [15:0]        Q_neg_ref        ;
 
 reg_bank
 #(
@@ -100,7 +106,6 @@ gps_gen_core core
   .sin_out             ( sin_from_core   ),
   .cos_out             ( cos_from_core   )
 );
-assign leds_out[3] = 0;
 
 //ca_gen to remove effect of code modulation for this test:
 always @ (posedge clk_in, negedge rst_in_n)
@@ -186,7 +191,6 @@ assign sin_shift_out = sin_shift_reg[shift_out_selector];
 assign cos_shift_out = cos_shift_reg[shift_out_selector];
 
 //Correlator:
-//TODO
 assign sin_mix = sin_shift_out ^ sin_gc_removal;
 assign cos_mix = cos_shift_out ^ cos_gc_removal;
 assign x_i_p   = cos_gc_removal ^ cos_shift_out;
@@ -230,4 +234,52 @@ begin
     end
   end
 end
+
+//PWM:
+always @ (posedge clk_in, negedge rst_in_n)
+begin
+  if(!rst_in_n)
+  begin
+    I_pos_ref <= 16'd0;
+    I_neg_ref <= 16'd0;
+    Q_pos_ref <= 16'd0;
+    Q_neg_ref <= 16'd0;
+    pwm_cntr  <= 16'd0;
+  end
+  else if(general_enable == 1'b1)
+  begin
+    if(pwm_cntr < (1023*16)-1)
+      pwm_cntr <= pwm_cntr + 1'b1;
+    else
+      pwm_cntr <= 16'd0;
+
+    if(accum_I_last < 0)
+    begin
+      I_pos_ref <= 16'd0;
+      I_neg_ref <= (~accum_I_last) + 1'b1;
+    end
+    else
+    begin
+      I_pos_ref <= accum_I_last;
+      I_neg_ref <= 16'd0;
+    end
+
+    if(accum_Q_last < 0)
+    begin
+      Q_pos_ref <= 16'd0;
+      Q_neg_ref <= (~accum_Q_last) + 1'b1;
+    end
+    else
+    begin
+      Q_pos_ref <= accum_Q_last;
+      Q_neg_ref <= 16'd0;
+    end
+  end
+end
+
+//Outputs:
+assign leds_out[0] = pwm_cntr < I_pos_ref;
+assign leds_out[1] = pwm_cntr < I_neg_ref;
+assign leds_out[2] = pwm_cntr < Q_pos_ref;
+assign leds_out[3] = pwm_cntr < Q_neg_ref;
 endmodule
