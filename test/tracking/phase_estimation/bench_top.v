@@ -5,7 +5,7 @@ module bench_top
 (
   input           clk_in   ,
   input           rst_in_n ,
-  //input           msg_in   ,
+  input           msg_in   ,
   input  [3:0]    btns_in  ,
   input           rx_in    ,
   output          tx_out   ,
@@ -49,8 +49,16 @@ reg  [4:0]       shift_out_selector;
 reg  [1:0]       pulse_detect_up   ;
 reg  [1:0]       pulse_detect_down ;
 //Bench correlator:
-wire             sin_mix           ;
-wire             cos_mix           ;
+wire              sin_mix          ;
+wire              cos_mix          ;
+wire              x_i_p            ;
+wire              x_q_p            ;
+reg signed [15:0] accum_I          ;
+reg signed [15:0] accum_Q          ;
+reg [15:0]        accum_cntr       ;
+reg               accum_done       ;
+reg signed [15:0] accum_I_last     ;
+reg signed [15:0] accum_Q_last     ;
 
 reg_bank
 #(
@@ -78,21 +86,16 @@ reg_bank
 //Core:
 gps_gen_core core
 (
-  .clk_in              ( clk             ),
-  .rst_in_n            ( rst_n           ),
+  .clk_in              ( clk_in          ),
+  .rst_in_n            ( rst_in_n        ),
   .ena_in              ( general_enable  ),
-  .msg_in              ( 1'b0/*msg_in*/          ),
+  .msg_in              ( msg_in          ),
   .n_sat_in            ( n_sat           ),
-  .use_preset_in       ( use_preset      ),
-  .preset_sel_in       ( 2'b11           ),
-  .use_msg_preset_in   ( use_msg_preset  ),
   .noise_off_in        ( noise_off       ),
   .signal_off_in       ( signal_off      ),
-  .ca_phase_start_in   ( ca_phase_start  ),
   .ca_phase_in         ( ca_phase        ),
   .doppler_in          ( doppler         ),
   .snr_in              ( snr             ),
-  .code_phase_done_out ( code_phase_done ),
   .start_out           (                 ),
   .sin_out             ( sin_from_core   ),
   .cos_out             ( cos_from_core   )
@@ -123,7 +126,7 @@ gc_gen gc_gen_removal
   .rst_in_n   ( rst_in_n  ),
   .clk_in     ( clk_in    ),
   .ena_in     ( gc_ena    ),
-  .sat_sel_in ( n_sat_in  ),
+  .sat_sel_in ( n_sat     ),
   .gc_out     ( gc_removal) 
 );
 
@@ -186,4 +189,45 @@ assign cos_shift_out = cos_shift_reg[shift_out_selector];
 //TODO
 assign sin_mix = sin_shift_out ^ sin_gc_removal;
 assign cos_mix = cos_shift_out ^ cos_gc_removal;
+assign x_i_p   = cos_gc_removal ^ cos_shift_out;
+assign x_q_p   = cos_gc_removal ^ sin_shift_out;
+
+always @ (posedge clk_in, negedge rst_in_n)
+begin
+  if(!rst_in_n)
+  begin
+    accum_I      <= 16'd0 ;
+    accum_Q      <= 16'd0 ;
+    accum_cntr   <= 16'd0 ;
+    accum_done   <= 1'b0  ;
+    accum_I_last <= 16'd0 ;
+    accum_Q_last <= 16'd0 ;
+  end
+  else
+  begin
+    if((accum_cntr < (1023*16)-1) && (general_enable == 1'b1))
+    begin
+      accum_cntr <= accum_cntr + 1'b1;
+      accum_done <= 1'b0;
+      if(x_i_p == 1'b0)
+        accum_I <= accum_I + 1;
+      else
+        accum_I <= accum_I - 1;
+
+      if(x_q_p == 1'b0)
+        accum_Q <= accum_Q + 1;
+      else
+        accum_Q <= accum_Q - 1;
+    end
+    else
+    begin
+      accum_cntr   <= 16'd0   ;
+      accum_done   <= 1'b1    ;
+      accum_I      <= 16'd0   ;
+      accum_Q      <= 16'd0   ;
+      accum_I_last <= accum_I ;
+      accum_Q_last <= accum_Q ;
+    end
+  end
+end
 endmodule

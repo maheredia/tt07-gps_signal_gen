@@ -1,0 +1,3 @@
+*.xml
+*/iverilog_dump.v
+*/sim_build/

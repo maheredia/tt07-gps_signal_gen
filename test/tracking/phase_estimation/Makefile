@@ -21,7 +21,7 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,uart_tx.v)
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,uart_rx.v)
 VERILOG_SOURCES += bench_top.v
 
-TOPLEVEL = gps_gen_core
+TOPLEVEL = bench_top
 
 MODULE = phase_estimation
 COMPILE_ARGS += -Pprng.OUT_BITS=5
