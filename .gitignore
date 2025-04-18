@@ -6,7 +6,7 @@ runs
 tt_submission
 src/user_config.tcl
 test/sim_build
-test/__pycache__/
+**/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
 *.gtkw
